@@ -17,3 +17,55 @@ build_property.SupportLocalizedComponentNames =
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
 build_property.MSBuildProjectDirectory = /Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2
 build_property._RazorSourceGeneratorDebug = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQWNjZXNzRGVuaWVkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/Cart/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQ2FydC9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/Logout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTG9nb3V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/Products/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZHVjdHMvQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/Products/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZHVjdHMvRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/Products/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJvZHVjdHMvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/Reports/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUmVwb3J0cy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/Sales/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvU2FsZXMvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvU2hhcmVkL19MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/danyelis/Desktop/Dany/Universidad/Mariano/Semestre_9/Ingenieria de Software/Parciales/Parcial 2/Parcial2/Parcial2/Pages/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

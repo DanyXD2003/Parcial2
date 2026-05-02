@@ -1,0 +1,108 @@
+@page
+@model Parcial2.Pages.Cart.IndexModel
+@{
+    ViewData["Title"]      = "Mi Carrito";
+    ViewData["ActivePage"] = "Cart";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Mi Carrito</h4>
+    @if (Model.Items.Any())
+    {
+        <form method="post" asp-page-handler="ClearCart">
+            <button type="submit" class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('Vaciar el carrito?')">
+                Vaciar
+            </button>
+        </form>
+    }
+</div>
+
+@if (!Model.Items.Any())
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <h5 class="text-muted">Tu carrito esta vacio</h5>
+            <p class="text-muted small">Agrega productos desde el catalogo</p>
+            <a asp-page="/Products/Index" class="btn btn-primary mt-2">Ver Productos</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">@item.ProductName</div>
+                                        <small class="text-muted">@item.Category</small>
+                                    </td>
+                                    <td>Q @item.UnitPrice.ToString("N2")</td>
+                                    <td style="width:130px">
+                                        <form method="post" asp-page-handler="UpdateQuantity">
+                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                            <input type="number" name="quantity" value="@item.Quantity"
+                                                   min="1" max="@item.MaxStock"
+                                                   class="form-control form-control-sm"
+                                                   onchange="this.form.submit()" style="width:75px" />
+                                        </form>
+                                    </td>
+                                    <td class="fw-semibold">Q @((item.Quantity * item.UnitPrice).ToString("N2"))</td>
+                                    <td>
+                                        <form method="post" asp-page-handler="RemoveItem">
+                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Quitar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-white fw-semibold py-3">Resumen del pedido</div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between text-muted small mb-2">
+                        <span>Productos</span>
+                        <span>@Model.Items.Count</span>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small mb-3">
+                        <span>Unidades</span>
+                        <span>@Model.Items.Sum(i => i.Quantity)</span>
+                    </div>
+                    <hr class="my-2" />
+                    <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
+                        <span>Total</span>
+                        <span class="text-success">Q @Model.Total.ToString("N2")</span>
+                    </div>
+                    <form method="post" asp-page-handler="Checkout">
+                        <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">
+                            Finalizar Compra
+                        </button>
+                    </form>
+                    <a asp-page="/Products/Index" class="btn btn-outline-secondary w-100 mt-2 btn-sm">
+                        Seguir Comprando
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

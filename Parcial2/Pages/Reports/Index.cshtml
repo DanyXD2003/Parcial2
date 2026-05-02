@@ -1,0 +1,262 @@
+@page
+@model Parcial2.Pages.Reports.IndexModel
+@{
+    ViewData["Title"]      = "Reportes";
+    ViewData["ActivePage"] = "Reports";
+}
+
+<div class="mb-4">
+    <h4 class="fw-bold mb-0">Reportes</h4>
+</div>
+
+<ul class="nav nav-tabs mb-4" id="reportTabs">
+    <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#daily">Diario</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#weekly">Semanal</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#inventory">Inventario</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#lowstock">
+            Stock Bajo
+            @if (Model.LowStockProducts.Any())
+            {
+                <span class="badge bg-warning text-dark ms-1">@Model.LowStockProducts.Count</span>
+            }
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+
+    <!-- DAILY -->
+    <div class="tab-pane fade show active" id="daily">
+        <form method="get" class="d-flex align-items-center gap-2 mb-3">
+            <input type="hidden" name="tab" value="daily" />
+            <label class="form-label mb-0 small fw-semibold">Fecha:</label>
+            <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")"
+                   class="form-control form-control-sm" style="width:160px" />
+            <button type="submit" class="btn btn-sm btn-outline-primary">Ver</button>
+        </form>
+        <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+                <div class="card text-center py-3">
+                    <div class="text-muted small mb-1">Ventas</div>
+                    <div class="fs-3 fw-bold text-primary">@Model.DailySales.Count</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card text-center py-3">
+                    <div class="text-muted small mb-1">Ingresos</div>
+                    <div class="fs-3 fw-bold text-success">Q @Model.DailySales.Sum(s => s.TotalAmount).ToString("N0")</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card text-center py-3">
+                    <div class="text-muted small mb-1">Promedio por venta</div>
+                    <div class="fs-3 fw-bold text-info">
+                        $@(Model.DailySales.Any() ? (Model.DailySales.Sum(s => s.TotalAmount) / Model.DailySales.Count).ToString("N0") : "0")
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (Model.DailySales.Any())
+        {
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                            <tr><th>#</th><th>Hora</th><th>Cajero</th><th>Items</th><th>Total</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in Model.DailySales)
+                            {
+                                <tr>
+                                    <td class="text-muted">@s.Id</td>
+                                    <td>@s.SaleDate.ToString("HH:mm")</td>
+                                    <td>@s.User.Username</td>
+                                    <td>@s.SaleItems.Sum(si => si.Quantity)</td>
+                                    <td class="fw-semibold">Q @s.TotalAmount.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center text-muted py-4">No hubo ventas en esta fecha</div>
+        }
+    </div>
+
+    <!-- WEEKLY -->
+    <div class="tab-pane fade" id="weekly">
+        <form method="get" class="d-flex align-items-center gap-2 mb-3">
+            <input type="hidden" name="tab" value="weekly" />
+            <label class="form-label mb-0 small fw-semibold">Inicio de semana:</label>
+            <input type="date" name="weekStart" value="@Model.WeekStart.ToString("yyyy-MM-dd")"
+                   class="form-control form-control-sm" style="width:160px" />
+            <button type="submit" class="btn btn-sm btn-outline-primary">Ver</button>
+        </form>
+        <p class="text-muted small mb-3">
+            Semana: @Model.WeekStart.ToString("dd/MM/yyyy") — @Model.WeekStart.AddDays(6).ToString("dd/MM/yyyy")
+        </p>
+        <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+                <div class="card text-center py-3">
+                    <div class="text-muted small mb-1">Total ventas</div>
+                    <div class="fs-3 fw-bold text-primary">@Model.WeeklySales.Count</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card text-center py-3">
+                    <div class="text-muted small mb-1">Ingresos</div>
+                    <div class="fs-3 fw-bold text-success">Q @Model.WeeklySales.Sum(s => s.TotalAmount).ToString("N0")</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card text-center py-3">
+                    <div class="text-muted small mb-1">Dias con ventas</div>
+                    <div class="fs-3 fw-bold text-info">@Model.WeeklyBreakdown.Count(d => d.Count > 0)</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr><th>Dia</th><th>Ventas</th><th>Ingresos</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var day in Model.WeeklyBreakdown)
+                        {
+                            <tr class="@(day.Count == 0 ? "text-muted" : "")">
+                                <td>@day.Date.ToString("dddd dd/MM")</td>
+                                <td>@day.Count</td>
+                                <td class="@(day.Revenue > 0 ? "fw-semibold text-success" : "")">
+                                    @(day.Revenue > 0 ? "Q " + day.Revenue.ToString("N2") : "—")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="tab-pane fade" id="inventory">
+        <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+                <div class="card text-center py-3">
+                    <div class="text-muted small mb-1">Productos activos</div>
+                    <div class="fs-3 fw-bold text-primary">@Model.AllProducts.Count</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card text-center py-3">
+                    <div class="text-muted small mb-1">Stock bajo</div>
+                    <div class="fs-3 fw-bold @(Model.LowStockProducts.Any() ? "text-warning" : "text-success")">
+                        @Model.LowStockProducts.Count
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card text-center py-3">
+                    <div class="text-muted small mb-1">Unidades totales</div>
+                    <div class="fs-3 fw-bold text-info">@Model.AllProducts.Sum(p => p.Stock)</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr><th>Producto</th><th>Categoria</th><th>Precio</th><th>Stock</th><th>Umbral</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.AllProducts.OrderBy(p => p.Category).ThenBy(p => p.Name))
+                        {
+                            <tr class="@(p.Stock <= p.LowStockThreshold ? "table-warning" : "")">
+                                <td class="fw-semibold">@p.Name</td>
+                                <td><span class="badge bg-secondary fw-normal">@p.Category</span></td>
+                                <td>Q @p.Price.ToString("N2")</td>
+                                <td>
+                                    @if (p.Stock <= p.LowStockThreshold)
+                                    {
+                                        <span class="text-warning fw-bold">@p.Stock (bajo)</span>
+                                    }
+                                    else
+                                    {
+                                        @p.Stock
+                                    }
+                                </td>
+                                <td class="text-muted">@p.LowStockThreshold</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOW STOCK -->
+    <div class="tab-pane fade" id="lowstock">
+        @if (!Model.LowStockProducts.Any())
+        {
+            <div class="text-center text-success py-5">
+                <h5>Todo el inventario esta en niveles normales</h5>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                Hay <strong>@Model.LowStockProducts.Count</strong> producto(s) con stock bajo o agotado.
+            </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                            <tr><th>Producto</th><th>Categoria</th><th>Stock actual</th><th>Umbral</th><th>Accion</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var p in Model.LowStockProducts.OrderBy(p => p.Stock))
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@p.Name</td>
+                                    <td>@p.Category</td>
+                                    <td>
+                                        <span class="badge @(p.Stock == 0 ? "bg-danger" : "bg-warning text-dark")">
+                                            @(p.Stock == 0 ? "AGOTADO" : p.Stock.ToString())
+                                        </span>
+                                    </td>
+                                    <td class="text-muted">@p.LowStockThreshold</td>
+                                    <td>
+                                        <a asp-page="/Products/Index" class="btn btn-outline-primary btn-sm">
+                                            Reponer
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        const tabParam = new URLSearchParams(window.location.search).get('tab');
+        if (tabParam) {
+            const tab = document.querySelector(`[href="#${tabParam}"]`);
+            if (tab) new bootstrap.Tab(tab).show();
+        }
+    </script>
+}

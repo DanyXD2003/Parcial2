@@ -1,0 +1,59 @@
+@page "{id:int}"
+@model Parcial2.Pages.Products.EditModel
+@{
+    ViewData["Title"]      = "Editar Producto";
+    ViewData["ActivePage"] = "Products";
+}
+
+<div class="mb-4">
+    <a asp-page="Index" class="text-muted text-decoration-none small">Volver a Productos</a>
+    <h4 class="fw-bold mt-2 mb-0">Editar Producto</h4>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="Input.Name" class="form-label fw-semibold">Nombre *</label>
+                        <input asp-for="Input.Name" class="form-control" />
+                        <span asp-validation-for="Input.Name" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Description" class="form-label fw-semibold">Descripcion</label>
+                        <input asp-for="Input.Description" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Category" class="form-label fw-semibold">Categoria *</label>
+                        <input asp-for="Input.Category" class="form-control" />
+                        <span asp-validation-for="Input.Category" class="text-danger small"></span>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label asp-for="Input.Price" class="form-label fw-semibold">Precio *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Q</span>
+                                <input asp-for="Input.Price" class="form-control" type="number" step="0.01" min="0.01" />
+                            </div>
+                            <span asp-validation-for="Input.Price" class="text-danger small"></span>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold">Stock actual</label>
+                            <input class="form-control" value="@Model.CurrentStock" disabled />
+                            <div class="form-text">Usar "Stock" desde la lista para ajustar.</div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Input.LowStockThreshold" class="form-label fw-semibold">Alerta stock bajo</label>
+                        <input asp-for="Input.LowStockThreshold" class="form-control" type="number" min="1" />
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">Guardar Cambios</button>
+                        <a asp-page="Index" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

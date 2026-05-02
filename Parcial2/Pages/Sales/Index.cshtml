@@ -1,0 +1,131 @@
+@page
+@model Parcial2.Pages.Sales.IndexModel
+@{
+    ViewData["Title"]      = "Ventas";
+    ViewData["ActivePage"] = "Sales";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Ventas</h4>
+    <a asp-page="/Cart/Index" class="btn btn-success btn-sm">Nueva Venta</a>
+</div>
+
+<!-- Filter -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="d-flex align-items-center gap-2 flex-wrap">
+            <label class="form-label mb-0 small fw-semibold">Filtrar por fecha:</label>
+            <input type="date" name="date" value="@Model.FilterDate?.ToString("yyyy-MM-dd")"
+                   class="form-control form-control-sm" style="width:160px" />
+            <button type="submit" class="btn btn-sm btn-outline-primary">Filtrar</button>
+            @if (Model.FilterDate.HasValue)
+            {
+                <a asp-page="Index" class="btn btn-sm btn-outline-secondary">Limpiar</a>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        @if (!Model.Sales.Any())
+        {
+            <div class="text-center text-muted py-5">
+                <p class="mb-0">No hay ventas para mostrar</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Fecha</th>
+                            <th>Cajero</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sale in Model.Sales)
+                        {
+                            <tr>
+                                <td class="text-muted small">@sale.Id</td>
+                                <td>
+                                    <div>@sale.SaleDate.ToString("dd/MM/yyyy")</div>
+                                    <small class="text-muted">@sale.SaleDate.ToString("HH:mm") UTC</small>
+                                </td>
+                                <td>@sale.User.Username</td>
+                                <td>@sale.SaleItems.Sum(si => si.Quantity) uds.</td>
+                                <td class="fw-semibold text-success">Q @sale.TotalAmount.ToString("N2")</td>
+                                <td>
+                                    <span class="badge @(sale.Status == "Completed" ? "bg-success" : "bg-secondary")">
+                                        @sale.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#saleDetailModal"
+                                            data-sale-id="@sale.Id"
+                                            data-sale-date="@sale.SaleDate.ToString("dd/MM/yyyy HH:mm")"
+                                            data-sale-cashier="@sale.User.Username"
+                                            data-sale-total="@sale.TotalAmount.ToString("N2")"
+                                            data-sale-items='@System.Text.Json.JsonSerializer.Serialize(sale.SaleItems.Select(si => new { si.Product.Name, si.Quantity, si.UnitPrice }))'>
+                                        Ver
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Sale Detail Modal -->
+<div class="modal fade" id="saleDetailModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title fw-semibold">Detalle de Venta #<span id="mdSaleId"></span></h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row text-muted small mb-3">
+                    <div class="col-6">Fecha: <span id="mdDate" class="text-dark"></span></div>
+                    <div class="col-6">Cajero: <span id="mdCashier" class="text-dark fw-semibold"></span></div>
+                </div>
+                <table class="table table-sm">
+                    <thead class="table-light">
+                        <tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr>
+                    </thead>
+                    <tbody id="mdItems"></tbody>
+                </table>
+                <div class="text-end fw-bold">Total: Q<span id="mdTotal"></span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('saleDetailModal').addEventListener('show.bs.modal', function (e) {
+            const btn = e.relatedTarget;
+            document.getElementById('mdSaleId').textContent  = btn.dataset.saleId;
+            document.getElementById('mdDate').textContent    = btn.dataset.saleDate;
+            document.getElementById('mdCashier').textContent = btn.dataset.saleCashier;
+            document.getElementById('mdTotal').textContent   = btn.dataset.saleTotal;
+
+            const items = JSON.parse(btn.dataset.saleItems);
+            const tbody = document.getElementById('mdItems');
+            tbody.innerHTML = items.map(i =>
+                `<tr><td>${i.Name}</td><td>${i.Quantity}</td><td>Q${i.UnitPrice.toFixed(2)}</td><td>Q${(i.Quantity * i.UnitPrice).toFixed(2)}</td></tr>`
+            ).join('');
+        });
+    </script>
+}

@@ -1,0 +1,148 @@
+@page
+@model Parcial2.Pages.Products.IndexModel
+@{
+    ViewData["Title"]      = "Productos";
+    ViewData["ActivePage"] = "Products";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Productos</h4>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-page="Create" class="btn btn-primary">Nuevo Producto</a>
+    }
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:40px">#</th>
+                        <th>Nombre</th>
+                        <th>Categoria</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Gestion</th>
+                        <th>Agregar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Products)
+                    {
+                        <tr>
+                            <td class="text-muted small">@p.Id</td>
+                            <td>
+                                <div class="fw-semibold">@p.Name</div>
+                                @if (!string.IsNullOrEmpty(p.Description))
+                                {
+                                    <small class="text-muted">@p.Description</small>
+                                }
+                            </td>
+                            <td><span class="badge bg-secondary fw-normal">@p.Category</span></td>
+                            <td class="fw-semibold">Q @p.Price.ToString("N2")</td>
+                            <td>
+                                @if (p.Stock <= p.LowStockThreshold)
+                                {
+                                    <span class="badge bg-warning text-dark">@p.Stock (bajo)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">@p.Stock</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-page="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary me-1">
+                                    Editar
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-warning me-1"
+                                        data-bs-toggle="modal" data-bs-target="#stockModal"
+                                        data-product-id="@p.Id"
+                                        data-product-name="@p.Name"
+                                        data-current-stock="@p.Stock">
+                                    Stock
+                                </button>
+                                <form method="post" asp-page-handler="Delete" asp-route-id="@p.Id"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Eliminar?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <form method="post" asp-page-handler="AddToCart" class="d-flex align-items-center gap-1">
+                                    <input type="hidden" name="productId" value="@p.Id" />
+                                    <input type="number" name="quantity" value="1" min="1" max="@p.Stock"
+                                           class="form-control form-control-sm" style="width:65px"
+                                           @(p.Stock == 0 ? "disabled" : "") />
+                                    <button type="submit" class="btn btn-sm btn-success"
+                                            @(p.Stock == 0 ? "disabled" : "")>
+                                        +
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Products.Any())
+                    {
+                        <tr><td colspan="7" class="text-center text-muted py-4">No hay productos registrados</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="stockModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title fw-semibold">Ajustar Stock</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="post" asp-page-handler="AdjustStock">
+                    <div class="modal-body">
+                        <p class="mb-1 small text-muted">Producto</p>
+                        <p class="fw-semibold mb-3" id="modalProductName"></p>
+                        <p class="mb-3 small text-muted">Stock actual: <strong id="modalCurrentStock"></strong></p>
+                        <input type="hidden" id="modalProductId" name="productId" />
+                        <div class="mb-3">
+                            <label class="form-label small">Cantidad (+/-)</label>
+                            <input type="number" name="quantity" class="form-control form-control-sm"
+                                   placeholder="Ej: +50 o -10" required />
+                            <div class="form-text">Positivo para agregar, negativo para restar.</div>
+                        </div>
+                        <div class="mb-1">
+                            <label class="form-label small">Motivo</label>
+                            <select name="reason" class="form-select form-select-sm">
+                                <option value="restock">Reposicion</option>
+                                <option value="adjustment">Ajuste de inventario</option>
+                                <option value="loss">Perdida / Merma</option>
+                                <option value="return">Devolucion</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-sm btn-primary">Aplicar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+@section Scripts {
+    <script>
+        const modal = document.getElementById('stockModal');
+        if (modal) {
+            modal.addEventListener('show.bs.modal', e => {
+                const btn = e.relatedTarget;
+                document.getElementById('modalProductId').value         = btn.dataset.productId;
+                document.getElementById('modalProductName').textContent  = btn.dataset.productName;
+                document.getElementById('modalCurrentStock').textContent = btn.dataset.currentStock;
+            });
+        }
+    </script>
+}
