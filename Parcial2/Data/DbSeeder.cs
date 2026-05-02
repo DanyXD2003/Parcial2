@@ -16,15 +16,24 @@ public static class DbSeeder
 
         // EnsureCreatedAsync returns false (skips table creation) when the DB already has
         // ANY tables — even unrelated ones from extensions or previous partial deploys.
-        // Check for our specific schema instead of relying on that behavior.
-        var schemaReady = await db.Database
-            .SqlQueryRaw<bool>(
-                "SELECT EXISTS (SELECT 1 FROM information_schema.tables " +
-                "WHERE table_schema = 'public' AND table_name = 'Users')")
-            .FirstAsync();
-
-        if (!schemaReady)
-            await creator.CreateTablesAsync();
+        // Use raw ADO.NET to check our specific schema, avoiding EF query translation.
+        var conn = db.Database.GetDbConnection();
+        try
+        {
+            await conn.OpenAsync();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT EXISTS (" +
+                              "  SELECT 1 FROM information_schema.tables" +
+                              "  WHERE table_schema = 'public' AND table_name = 'Users'" +
+                              ")";
+            var exists = (bool)(await cmd.ExecuteScalarAsync())!;
+            if (!exists)
+                await creator.CreateTablesAsync();
+        }
+        finally
+        {
+            await conn.CloseAsync();
+        }
 
         if (!await db.Users.AnyAsync())
         {
