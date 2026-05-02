@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Parcial2.Models;
 
 namespace Parcial2.Data;
@@ -6,9 +9,24 @@ public static class DbSeeder
 {
     public static async Task SeedAsync(AppDbContext db)
     {
-        await db.Database.EnsureCreatedAsync();
+        var creator = (RelationalDatabaseCreator)db.Database.GetService<IRelationalDatabaseCreator>();
 
-        if (!db.Users.Any())
+        if (!await creator.ExistsAsync())
+            await creator.CreateAsync();
+
+        // EnsureCreatedAsync returns false (skips table creation) when the DB already has
+        // ANY tables — even unrelated ones from extensions or previous partial deploys.
+        // Check for our specific schema instead of relying on that behavior.
+        var schemaReady = await db.Database
+            .SqlQueryRaw<bool>(
+                "SELECT EXISTS (SELECT 1 FROM information_schema.tables " +
+                "WHERE table_schema = 'public' AND table_name = 'Users')")
+            .FirstAsync();
+
+        if (!schemaReady)
+            await creator.CreateTablesAsync();
+
+        if (!await db.Users.AnyAsync())
         {
             db.Users.AddRange(
                 new User { Username = "admin",   PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),   Role = "Admin" },
@@ -17,7 +35,7 @@ public static class DbSeeder
             await db.SaveChangesAsync();
         }
 
-        if (!db.Products.Any())
+        if (!await db.Products.AnyAsync())
         {
             db.Products.AddRange(
                 new Product { Name = "Leche Entera 1L",         Description = "Leche entera pasteurizada",      Category = "Lácteos",     Price = 2500, Stock = 50,  LowStockThreshold = 10 },
